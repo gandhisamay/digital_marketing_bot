@@ -1,0 +1,5 @@
+pandas
+beautifulsoup4
+selenium
+python-dotenv
+chromedriver-autoinstaller
