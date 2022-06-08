@@ -14,52 +14,9 @@ options.add_argument('--incognito')
 options.add_argument('--headless')
 driver = webdriver.Chrome(options=options)
 
-print("Getting company data!")
-
-# Don't delete this in any case
-
-# company_websites = []
-# company_names = []
-# total_pages = 322
-
-# for i in range(0,total_pages-1):
-#     driver.get(f"https://clutch.co/us/agencies/digital?page={i}")
-
-#     page_source = driver.page_source
-
-#     soup = BeautifulSoup(page_source, 'lxml')
-
-#     company_info = soup.find_all('h3', class_ = 'company_info')
-
-
-#     for company in company_info:
-#         if company.find('a'):
-#             company_names.append(company.find('a').text.strip())
-
-#     company_web_a_list = soup.find_all('a', class_ = 'website-link__item')
-
-#     for company_web_a in company_web_a_list:
-#         if '?' in company_web_a['href']:
-#             company_websites.append(company_web_a['href'].rpartition('?')[0])
-#         else:
-#             company_websites.append(company_web_a['href'])
-    
-#     if (i+1) % 2 == 0:
-#         print(f"Scraped {i+1} pages")
-
-
-# print(company_websites);
-
-# df = pd.DataFrame({'Name': company_names, 'Website': company_websites})
-
-# df.to_csv('Scovelo.csv')
-
-# print("CSV file created successfully")
-
-# print(df)
+print("Getting founder data!")
 
 load_dotenv()                    
-
 
 user_name = os.environ.get('USERNAME')
 password = os.environ.get('PASSWORD')
@@ -68,18 +25,18 @@ df = pd.read_csv('Scovelo.csv')
 
 founders = []
 
-# print(founders)
-print("Getting company founder data")
-
 driver.get("https://linkedin.com/uas/login")
   
-usernameElement = driver.find_element(By.ID, "username")
-usernameElement.send_keys(user_name)  # Enter Your Email Address
-  
-pword = driver.find_element(By.ID, "password")
-pword.send_keys(password)        # Enter Your Password
-  
-driver.find_element(By.CSS_SELECTOR, ".login__form_action_container button").click()
+try:
+    usernameElement = driver.find_element(By.ID, "username")
+    usernameElement.send_keys(user_name)  # Enter Your Email Address
+    
+    pword = driver.find_element(By.ID, "password")
+    pword.send_keys(password)        # Enter Your Password
+    
+    driver.find_element(By.CSS_SELECTOR, ".login__form_action_container button").click()
+except:
+    print("Failed to login via LinkedIn, please try some other credentials")
 
 counter = 0
 for company in df['Name']:
@@ -112,7 +69,7 @@ for company in df['Name']:
     counter += 1
     if counter % 10 == 0:
         df.to_csv('Scovelo.csv')
-        print("Data updated to the CSV successfully")
+        print("\nData updated to the CSV successfully")
 
 
 # Direct method to find the founders
