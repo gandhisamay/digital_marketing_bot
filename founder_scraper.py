@@ -1,3 +1,5 @@
+import imp
+from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import chromedriver_autoinstaller
@@ -37,6 +39,7 @@ try:
     driver.find_element(By.CSS_SELECTOR, ".login__form_action_container button").click()
 except:
     print("Failed to login via LinkedIn, please try some other credentials")
+    exit()
 
 counter = 0
 for company in df['Name']:
@@ -52,24 +55,42 @@ for company in df['Name']:
             print(f"Profile URL: {header.a['href']}")
             profile_url = header.a['href']
             driver.get(profile_url)  
+            sleep(2)
             page_source = driver.page_source
             soup = BeautifulSoup(page_source, 'lxml')
             try:
                 founder = soup.find('h1', class_='text-heading-xlarge inline t-24 v-align-middle break-words').text
                 print(founder)
                 
-                df.loc[df["Name"] == company, 'Founder'] = founder 
+                entry = df["Name"] == company
+                df.loc[entry, 'Founder'] = founder 
 
-            except:
-                df.loc[df["Name"] == company, 'Founder'] = "Error" 
-                print("Some error occurred in current entry!")
+                try:
+                    location = soup.find('span', class_='text-body-small inline t-black--light break-words').text
+                    print(location)
+                    detailedLocation = location.strip().split(',')
+                    df.loc[entry, 'City'] = detailedLocation[0]
+                    try:
+                        df.loc[entry, 'State'] = detailedLocation[1]
+                        try:
+                            df.loc[entry, 'Country'] = detailedLocation[2]
+                        except:
+                            print("Country details not available")
+                    except:
+                        print("State and Country details not available")
+                except Exception as e:
+                    print(e)
+                    print("Location details not available.")
+            except Exception as e:
+                print(e)
+                df.loc[df["Name"] == company, 'Founder'] = "Couldn't find details!" 
             print(" ")
-            break;
+            break
 
     counter += 1
     if counter % 10 == 0:
         df.to_csv('Scovelo.csv')
-        print("\nData updated to the CSV successfully")
+        print(f"\nData of {counter} founders updated to the CSV successfully")
 
 
 # Direct method to find the founders
