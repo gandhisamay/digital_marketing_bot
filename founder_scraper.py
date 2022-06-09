@@ -1,4 +1,3 @@
-import imp
 from time import sleep
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -69,11 +68,11 @@ for company in df['Name']:
                     location = soup.find('span', class_='text-body-small inline t-black--light break-words').text
                     print(location)
                     detailedLocation = location.strip().split(',')
-                    df.loc[entry, 'City'] = detailedLocation[0]
+                    df.loc[entry]['City'] = detailedLocation[0]
                     try:
-                        df.loc[entry, 'State'] = detailedLocation[1]
+                        df.loc[entry]['State'] = detailedLocation[1]
                         try:
-                            df.loc[entry, 'Country'] = detailedLocation[2]
+                            df.loc[entry]['Country'] = detailedLocation[2]
                         except:
                             print("Country details not available")
                     except:
@@ -92,21 +91,10 @@ for company in df['Name']:
         df.to_csv('Scovelo.csv')
         print(f"\nData of {counter} founders updated to the CSV successfully")
 
+# This code is for cleaning up the csv
+for column in df.columns:
+    if "Unnamed" in column:
+        df.drop(columns=column, inplace=True, axis=1)
 
-# Direct method to find the founders
-# for company in df['Name']:
-#     query = company + " founder"
-#     driver.get(f"https://www.google.com/search?q={query.replace(' ','+')}")
-#     page_source = driver.page_source
-
-#     soup = BeautifulSoup(page_source, 'lxml')
-
-#     headers = soup.find_all('div', class_='yuRUbf')
-
-#     for header in headers:
-#         if "https://www.linkedin.com" in header.a["href"]:
-#             # print(header.prettify())
-#             print(header.a['href'])
-
-#             break;
+df.to_csv('Scovelo.csv')
         

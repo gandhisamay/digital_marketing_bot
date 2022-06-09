@@ -8,3 +8,4 @@ pip install pwinput
 python3 setup.py
 python3 company_scraper.py 
 python3 founder_scraper.py 
+python3 csv_cleanup.py
