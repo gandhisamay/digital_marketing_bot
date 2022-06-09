@@ -59,20 +59,20 @@ for company in df['Name']:
             soup = BeautifulSoup(page_source, 'lxml')
             try:
                 founder = soup.find('h1', class_='text-heading-xlarge inline t-24 v-align-middle break-words').text
-                print(founder)
+                print(f"Founder : {founder}")
                 
                 entry = df["Name"] == company
-                df.loc[entry, 'Founder'] = founder 
+                df.loc[entry,'Founder'] = founder 
 
                 try:
-                    location = soup.find('span', class_='text-body-small inline t-black--light break-words').text
-                    print(location)
-                    detailedLocation = location.strip().split(',')
-                    df.loc[entry]['City'] = detailedLocation[0]
+                    location = soup.find('span', class_='text-body-small inline t-black--light break-words').text.strip()
+                    print(f"Location : {location}")
+                    detailedLocation = location.split(',')
+                    df.loc[entry,'City'] = detailedLocation[0]
                     try:
-                        df.loc[entry]['State'] = detailedLocation[1]
+                        df.loc[entry,'State'] = detailedLocation[1]
                         try:
-                            df.loc[entry]['Country'] = detailedLocation[2]
+                            df.loc[entry,'Country'] = detailedLocation[2]
                         except:
                             print("Country details not available")
                     except:
